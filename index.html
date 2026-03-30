@@ -1,80 +1,208 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Insta Reel Downloader ✨</title>
+<title>Krish GOD App 👑</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/particles.js"></script>
+
 <style>
 body {
   margin: 0;
   font-family: 'Poppins', sans-serif;
-  background: linear-gradient(135deg, #ff6ec4, #7873f5);
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  background: #0f0c29;
   color: white;
-}.container { background: rgba(255,255,255,0.1); backdrop-filter: blur(15px); padding: 30px; border-radius: 20px; text-align: center; width: 90%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); animation: fadeIn 1s ease-in-out; }
+}
+#particles-js {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
 
-h1 { margin-bottom: 10px; }
+.container {
+  width: 95%;
+  max-width: 450px;
+  margin: 20px auto;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(20px);
+  padding: 20px;
+  border-radius: 20px;
+}
 
-input { width: 100%; padding: 12px; border: none; border-radius: 10px; margin-top: 15px; outline: none; }
+h2 { text-align:center; }
 
-button { margin-top: 15px; padding: 12px 20px; border: none; border-radius: 10px; background: #ff6ec4; color: white; font-weight: bold; cursor: pointer; transition: 0.3s; }
+input, button {
+  width: 100%;
+  padding: 12px;
+  margin-top:10px;
+  border-radius:10px;
+  border:none;
+}
 
-button:hover { background: #ff3cac; transform: scale(1.05); }
+button {
+  background:#ff6ec4;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+}
 
-.loader { display: none; margin-top: 15px; }
+button:hover {
+  transform: scale(1.05);
+}
 
-video { width: 100%; margin-top: 15px; border-radius: 10px; }
+video,audio {
+  width:100%;
+  margin-top:10px;
+  border-radius:10px;
+}
 
-@keyframes fadeIn { from { opacity: 0; transform: translateY(20px);} to { opacity: 1; transform: translateY(0);} } </style>
+.dashboard {
+  margin-top:15px;
+  padding:10px;
+  border-radius:10px;
+  background: rgba(0,0,0,0.4);
+  font-size:13px;
+}
 
+.tabs {
+  display:flex;
+  margin-top:10px;
+}
+.tab {
+  flex:1;
+  text-align:center;
+  padding:10px;
+  background: rgba(255,255,255,0.2);
+  margin:3px;
+  border-radius:10px;
+  cursor:pointer;
+}
+.tab.active {
+  background:#ff3cac;
+}
+
+.section { display:none; }
+.section.active { display:block; }
+
+</style>
 </head>
-<body><div class="container">
-  <h1>📥 Insta Reel Downloader</h1>
-  <p>Paste your Instagram Reel link below</p>
-  <input type="text" id="url" placeholder="Enter Instagram URL">
-  <button onclick="downloadReel()">Download</button>
-  <div class="loader" id="loader">⏳ Processing...</div>
-  <video id="video" controls></video>
-  <a id="downloadBtn" style="display:none" download>
-    <button>Download Video</button>
-  </a>
-</div><script>
+
+<body>
+
+<div id="particles-js"></div>
+
+<div class="container">
+
+<h2>👑 Krish GOD App</h2>
+
+<input id="username" placeholder="Enter username">
+<button onclick="login()">Login</button>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('reel')">Reels</div>
+  <div class="tab" onclick="switchTab('song')">Songs</div>
+</div>
+
+<!-- REEL -->
+<div id="reel" class="section active">
+  <input id="reelUrl" placeholder="Instagram Reel URL">
+  <button onclick="downloadReel()">Download Reel</button>
+  <video id="reelVideo" controls></video>
+</div>
+
+<!-- SONG -->
+<div id="song" class="section">
+  <input id="songName" placeholder="Song name">
+  <button onclick="downloadSong()">Download Song</button>
+  <audio id="songPlayer" controls></audio>
+</div>
+
+<div class="dashboard" id="dashboard"></div>
+
+</div>
+
+<script>
+// particles
+particlesJS("particles-js", {
+  particles: {
+    number: { value: 60 },
+    size: { value: 3 }
+  }
+});
+
+// user + stats
+let user = localStorage.getItem("user") || "Guest";
+let stats = JSON.parse(localStorage.getItem("stats")) || {
+  downloads: 0
+};
+
+// login
+function login() {
+  user = document.getElementById("username").value;
+  localStorage.setItem("user", user);
+  updateDashboard();
+}
+
+// dashboard
+function updateDashboard() {
+  document.getElementById("dashboard").innerHTML =
+    `👤 User: ${user}<br>📥 Downloads: ${stats.downloads}`;
+}
+
+// switch tab
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+
+  document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add('active');
+  document.getElementById(tab).classList.add('active');
+}
+
+// download reel
 async function downloadReel() {
-  const url = document.getElementById("url").value;
-  const loader = document.getElementById("loader");
-  const video = document.getElementById("video");
-  const downloadBtn = document.getElementById("downloadBtn");
+  let url = document.getElementById("reelUrl").value;
 
   if (!url.includes("instagram.com")) {
-    alert("Invalid Instagram URL 😅");
+    alert("Invalid URL 😅");
     return;
   }
 
-  loader.style.display = "block";
-  video.style.display = "none";
-  downloadBtn.style.display = "none";
+  let res = await fetch(`https://insta-dl.hazex.workers.dev/?url=${url}`);
+  let data = await res.json();
 
-  try {
-    const res = await fetch(`https://insta-dl.hazex.workers.dev/?url=${url}`);
-    const data = await res.json();
-
-    if (!data.error) {
-      const videoUrl = data.result.url;
-      video.src = videoUrl;
-      video.style.display = "block";
-      downloadBtn.href = videoUrl;
-      downloadBtn.style.display = "block";
-    } else {
-      alert("Failed to download reel 😢");
-    }
-  } catch (err) {
-    alert("Error: " + err);
+  if (!data.error) {
+    document.getElementById("reelVideo").src = data.result.url;
+    stats.downloads++;
+    localStorage.setItem("stats", JSON.stringify(stats));
+    updateDashboard();
+  } else {
+    alert("Failed 😢");
   }
-
-  loader.style.display = "none";
 }
-</script></body>
+
+// download song
+async function downloadSong() {
+  let name = document.getElementById("songName").value;
+
+  let res = await fetch(`https://song-teleservice.vercel.app/song?songName=${name}`);
+  let data = await res.json();
+
+  if (data.downloadLink) {
+    document.getElementById("songPlayer").src = data.downloadLink;
+    stats.downloads++;
+    localStorage.setItem("stats", JSON.stringify(stats));
+    updateDashboard();
+  } else {
+    alert("Song not found 😢");
+  }
+}
+
+// init
+updateDashboard();
+</script>
+
+</body>
 </html>
