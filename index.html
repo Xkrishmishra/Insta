@@ -1,18 +1,80 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html><html lang="en">
 <head>
-    <title>Krish's Awesome App</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Insta Reel Downloader ✨</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #ff6ec4, #7873f5);
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+}.container { background: rgba(255,255,255,0.1); backdrop-filter: blur(15px); padding: 30px; border-radius: 20px; text-align: center; width: 90%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); animation: fadeIn 1s ease-in-out; }
+
+h1 { margin-bottom: 10px; }
+
+input { width: 100%; padding: 12px; border: none; border-radius: 10px; margin-top: 15px; outline: none; }
+
+button { margin-top: 15px; padding: 12px 20px; border: none; border-radius: 10px; background: #ff6ec4; color: white; font-weight: bold; cursor: pointer; transition: 0.3s; }
+
+button:hover { background: #ff3cac; transform: scale(1.05); }
+
+.loader { display: none; margin-top: 15px; }
+
+video { width: 100%; margin-top: 15px; border-radius: 10px; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(20px);} to { opacity: 1; transform: translateY(0);} } </style>
+
 </head>
-<body>
-    <header>
-        <h1>Welcome to Krish's Awesome App!</h1>
-        <img src="logo.png" alt="Krish's Logo">
-    </header>
-    <section>
-        <p>This is a description of Krish's Awesome App where you can do amazing things!</p>
-    </section>
-    <footer>
-        <p>© 2026 Krish's Awesome App</p>
-    </footer>
-</body>
+<body><div class="container">
+  <h1>📥 Insta Reel Downloader</h1>
+  <p>Paste your Instagram Reel link below</p>
+  <input type="text" id="url" placeholder="Enter Instagram URL">
+  <button onclick="downloadReel()">Download</button>
+  <div class="loader" id="loader">⏳ Processing...</div>
+  <video id="video" controls></video>
+  <a id="downloadBtn" style="display:none" download>
+    <button>Download Video</button>
+  </a>
+</div><script>
+async function downloadReel() {
+  const url = document.getElementById("url").value;
+  const loader = document.getElementById("loader");
+  const video = document.getElementById("video");
+  const downloadBtn = document.getElementById("downloadBtn");
+
+  if (!url.includes("instagram.com")) {
+    alert("Invalid Instagram URL 😅");
+    return;
+  }
+
+  loader.style.display = "block";
+  video.style.display = "none";
+  downloadBtn.style.display = "none";
+
+  try {
+    const res = await fetch(`https://insta-dl.hazex.workers.dev/?url=${url}`);
+    const data = await res.json();
+
+    if (!data.error) {
+      const videoUrl = data.result.url;
+      video.src = videoUrl;
+      video.style.display = "block";
+      downloadBtn.href = videoUrl;
+      downloadBtn.style.display = "block";
+    } else {
+      alert("Failed to download reel 😢");
+    }
+  } catch (err) {
+    alert("Error: " + err);
+  }
+
+  loader.style.display = "none";
+}
+</script></body>
 </html>
